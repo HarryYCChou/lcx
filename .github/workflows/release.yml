@@ -37,10 +37,10 @@ jobs:
       - name: Package binary
         run: |
           tar -C target/${{ matrix.target }}/release -czf \
-            lcx-${{ github.ref_name }}-${{ matrix.target }}.tar.gz lcx
+            lcx-${{ matrix.target }}.tar.gz lcx
 
       - name: Publish release
         uses: softprops/action-gh-release@v3
         with:
-          files: lcx-${{ github.ref_name }}-${{ matrix.target }}.tar.gz
+          files: lcx-${{ matrix.target }}.tar.gz
           generate_release_notes: true

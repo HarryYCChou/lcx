@@ -34,10 +34,16 @@ cargo build --release
 
 Copy `target/release/lcx` somewhere on your `PATH` (e.g. `~/.local/bin`).
 
-### With cargo
+### Linux (download from release page)
+
+Grab the prebuilt binary from the [latest release](https://github.com/HarryYCChou/lcx/releases/latest):
 
 ```bash
-cargo install --path .
+# x86_64 Linux
+curl -L -o lcx.tar.gz \
+  https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-x86_64-unknown-linux-gnu.tar.gz
+tar -xzf lcx.tar.gz
+install -m 755 lcx ~/.local/bin/lcx   # or somewhere on your PATH
 ```
 
 ## Quick Start
