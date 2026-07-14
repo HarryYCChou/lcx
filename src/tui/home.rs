@@ -73,6 +73,9 @@ struct App {
     search: String,
     results: Vec<ProblemSummary>,
     list_state: ListState,
+    /// Today's daily challenge, pinned to the top of results when the search
+    /// box is empty. Loaded once at startup.
+    daily: Option<ProblemSummary>,
     // Menu.
     menu_selected: usize,
     // Shared.
@@ -94,6 +97,7 @@ impl App {
             search: String::new(),
             results: Vec::new(),
             list_state: ListState::default(),
+            daily: None,
             menu_selected: 0,
             focus: Focus::Search,
             profile: Profile::Loading,
@@ -113,20 +117,68 @@ impl App {
     }
 
     fn refilter(&mut self) {
+        let is_empty = self.search.trim().is_empty();
         let filter = ListFilter {
             difficulty: None,
             tag: None,
             status: None,
-            query: if self.search.trim().is_empty() {
+            query: if is_empty {
                 None
             } else {
                 Some(self.search.trim().to_string())
             },
             limit: None,
         };
-        self.results = self.cache.query(&filter).unwrap_or_default();
+        let mut results = self.cache.query(&filter).unwrap_or_default();
+        // With no search query, pin today's daily challenge to the top (and
+        // drop its duplicate from the rest of the list).
+        if is_empty {
+            if let Some(daily) = &self.daily {
+                results.retain(|p| p.slug != daily.slug);
+                results.insert(0, daily.clone());
+            }
+        }
+        self.results = results;
         self.list_state
             .select(if self.results.is_empty() { None } else { Some(0) });
+    }
+
+    /// Whether the given slug is the daily challenge currently pinned to the top
+    /// (only pinned while the search box is empty).
+    fn is_daily(&self, slug: &str) -> bool {
+        self.search.trim().is_empty()
+            && self.daily.as_ref().is_some_and(|d| d.slug == slug)
+    }
+
+    /// Fetch today's daily challenge once and refresh the list. Best-effort: on
+    /// any error (offline, etc.) the daily simply isn't pinned.
+    fn load_daily(&mut self, cfg: &Config) {
+        let Ok(client) = LeetCodeClient::from_config(cfg) else {
+            return;
+        };
+        if let Ok((_date, daily)) = block_on(client.daily()) {
+            let q = daily.question;
+            // Prefer the cached summary (has status/ac rate/tags); fall back to
+            // a minimal entry built from the daily payload.
+            let summary = self
+                .cache
+                .find(&q.title_slug)
+                .ok()
+                .flatten()
+                .unwrap_or_else(|| ProblemSummary {
+                    question_id: 0,
+                    frontend_id: q.question_frontend_id,
+                    title: q.title,
+                    slug: q.title_slug,
+                    difficulty: q.difficulty,
+                    paid_only: false,
+                    ac_rate: 0.0,
+                    status: None,
+                    tags: Vec::new(),
+                });
+            self.daily = Some(summary);
+            self.refilter();
+        }
     }
 
     fn move_result(&mut self, delta: i32) {
@@ -260,6 +312,7 @@ impl App {
 pub fn run(terminal: &mut Terminal<Backend>, cfg: &mut Config, cache: Cache) -> Result<()> {
     let mut app = App::new(cache);
     app.load_profile(cfg);
+    app.load_daily(cfg);
     terminal.clear()?;
 
     loop {
@@ -454,7 +507,7 @@ fn ui(f: &mut Frame, app: &mut App, cfg: &Config) {
     let list_items: Vec<ListItem> = app
         .results
         .iter()
-        .map(|p| ListItem::new(problem_line(p)))
+        .map(|p| ListItem::new(problem_line(p, app.is_daily(&p.slug))))
         .collect();
     let total = app.cache.count().unwrap_or(0);
     let list_title = format!(" Problems ({} / {total}) ", app.results.len());
@@ -542,7 +595,7 @@ fn bar(pct: f64, cells: usize) -> String {
     format!("[{}{}]", "\u{2588}".repeat(filled), " ".repeat(cells - filled))
 }
 
-fn problem_line(p: &ProblemSummary) -> Line<'static> {
+fn problem_line(p: &ProblemSummary, is_daily: bool) -> Line<'static> {
     let status = match p.status.as_deref() {
         Some("ac") => Span::styled("\u{2714} ", Style::default().fg(Color::Green)),
         Some("notac") => Span::styled("\u{2717} ", Style::default().fg(Color::Yellow)),
@@ -555,14 +608,23 @@ fn problem_line(p: &ProblemSummary) -> Line<'static> {
         _ => Color::Gray,
     };
     let lock = if p.paid_only { " \u{1f512}" } else { "" };
-    Line::from(vec![
+    let mut spans = vec![
         status,
         Span::raw(format!("{:>5}  ", p.frontend_id)),
         Span::raw(p.title.clone()),
         Span::raw("  "),
         Span::styled(p.difficulty.clone(), Style::default().fg(diff_color)),
         Span::raw(lock.to_string()),
-    ])
+    ];
+    if is_daily {
+        spans.push(Span::styled(
+            "  \u{2605} Daily",
+            Style::default()
+                .fg(Color::Rgb(255, 161, 22))
+                .add_modifier(Modifier::BOLD),
+        ));
+    }
+    Line::from(spans)
 }
 
 fn render_lang_picker(f: &mut Frame, app: &App) {
