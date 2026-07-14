@@ -27,3 +27,9 @@ ratatui = "0.29"
 crossterm = "0.28"
 open = "5.4.0"
 rookie = "0.5.6"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
