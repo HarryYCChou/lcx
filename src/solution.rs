@@ -24,7 +24,7 @@ pub fn solution_path(cfg: &Config, frontend_id: &str, slug: &str, lang_slug: &st
 pub fn render_file(lang_slug: &str, code: &str) -> String {
     let cp = lang::comment_prefix(lang_slug);
     format!(
-        "{cp} lcx \u{2014} LeetCode in your terminal\n{cp} Solved with lcx \u{2014} checkout https://github.com/HarryYCChou/lcx\n\n{}\n",
+        "{cp} Solved with LCX\n{cp} An open-source CLI for LeetCode.\n{cp} https://github.com/HarryYCChou/lcx\n\n{}\n",
         clean_snippet(code),
     )
 }
