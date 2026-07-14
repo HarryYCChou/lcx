@@ -27,9 +27,8 @@ Grab the prebuilt binary from the [latest release](https://github.com/HarryYCCho
 
 ```bash
 # x86_64 Linux
-curl -L -o lcx.tar.gz \
-  https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-x86_64-unknown-linux-gnu.tar.gz
-tar -xzf lcx.tar.gz
+curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-x86_64-unknown-linux-gnu.tar.gz
+tar -xzf lcx-x86_64-unknown-linux-gnu.tar.gz
 install -m 755 lcx ~/.local/bin/lcx   # or somewhere on your PATH
 ```
 
