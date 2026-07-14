@@ -102,7 +102,8 @@ impl LoginApp {
     fn stop_polling(&mut self) {
         if self.polling {
             self.polling = false;
-            self.status = "Auto-detect paused (manual input). <Enter> to verify & save.".to_string();
+            self.status =
+                "Auto-detect paused (manual input). <Enter> to verify & save.".to_string();
         }
     }
 
@@ -174,17 +175,20 @@ impl LoginApp {
 
     fn open_browser(&mut self) {
         self.status = match open::that(LOGIN_URL) {
-            Ok(()) => "Opened LeetCode login in your browser. Sign in; auto-detect will log you in.".to_string(),
+            Ok(()) => {
+                "Opened LeetCode login in your browser. Sign in; auto-detect will log you in."
+                    .to_string()
+            }
             Err(e) => format!("Could not open browser: {e}"),
         };
     }
-
 }
 
 /// Read LeetCode cookies from any local browser the user is logged into.
 fn import_cookies() -> Result<(String, String)> {
     let domains = Some(vec!["leetcode.com".to_string()]);
-    let cookies = rookie::load(domains).map_err(|e| anyhow!("could not read browser cookies: {e}"))?;
+    let cookies =
+        rookie::load(domains).map_err(|e| anyhow!("could not read browser cookies: {e}"))?;
 
     let mut session = None;
     let mut csrf = None;
@@ -211,7 +215,11 @@ fn import_cookies() -> Result<(String, String)> {
 ///
 /// `cancel_quits` only affects the help wording (Esc = "quit" at startup vs.
 /// "cancel" when reopened from the browser).
-pub fn run(terminal: &mut Terminal<Backend>, cfg: &Config, cancel_quits: bool) -> Result<LoginOutcome> {
+pub fn run(
+    terminal: &mut Terminal<Backend>,
+    cfg: &Config,
+    cancel_quits: bool,
+) -> Result<LoginOutcome> {
     let mut app = LoginApp::new(cfg, cancel_quits);
     // Try immediately so an already-logged-in browser logs us in without delay.
     app.poll_tick();
@@ -280,7 +288,11 @@ fn ui(f: &mut Frame, app: &LoginApp) {
     // Vertically center the logo in the left column.
     let left = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Min(0), Constraint::Length(23), Constraint::Min(0)])
+        .constraints([
+            Constraint::Min(0),
+            Constraint::Length(23),
+            Constraint::Min(0),
+        ])
         .split(cols[0]);
     f.render_widget(logo_widget(), left[1]);
 
@@ -297,8 +309,18 @@ fn ui(f: &mut Frame, app: &LoginApp) {
         ])
         .split(cols[1]);
 
-    f.render_widget(field_widget("LEETCODE_SESSION", &app.session, app.field == Field::Session), right[1]);
-    f.render_widget(field_widget("csrftoken", &app.csrf, app.field == Field::Csrf), right[2]);
+    f.render_widget(
+        field_widget(
+            "LEETCODE_SESSION",
+            &app.session,
+            app.field == Field::Session,
+        ),
+        right[1],
+    );
+    f.render_widget(
+        field_widget("csrftoken", &app.csrf, app.field == Field::Csrf),
+        right[2],
+    );
 
     let status = Paragraph::new(app.status.as_str())
         .block(Block::default().borders(Borders::ALL).title(" Status "));
@@ -400,11 +422,21 @@ fn field_widget<'a>(label: &'a str, value: &str, focused: bool) -> Paragraph<'a>
 /// without exposing the full secret on screen.
 fn mask(value: &str, focused: bool) -> String {
     if value.is_empty() {
-        return if focused { "\u{2588}".to_string() } else { String::new() };
+        return if focused {
+            "\u{2588}".to_string()
+        } else {
+            String::new()
+        };
     }
     let len = value.chars().count();
-    let tail: String = value.chars().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect();
+    let tail: String = value
+        .chars()
+        .rev()
+        .take(4)
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect();
     let cursor = if focused { "\u{2588}" } else { "" };
     format!("{} chars \u{2022} \u{2026}{tail}{cursor}", len)
 }
-

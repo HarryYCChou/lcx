@@ -139,15 +139,17 @@ impl App {
             }
         }
         self.results = results;
-        self.list_state
-            .select(if self.results.is_empty() { None } else { Some(0) });
+        self.list_state.select(if self.results.is_empty() {
+            None
+        } else {
+            Some(0)
+        });
     }
 
     /// Whether the given slug is the daily challenge currently pinned to the top
     /// (only pinned while the search box is empty).
     fn is_daily(&self, slug: &str) -> bool {
-        self.search.trim().is_empty()
-            && self.daily.as_ref().is_some_and(|d| d.slug == slug)
+        self.search.trim().is_empty() && self.daily.as_ref().is_some_and(|d| d.slug == slug)
     }
 
     /// Fetch today's daily challenge once and refresh the list. Best-effort: on
@@ -244,7 +246,10 @@ impl App {
     }
 
     fn open_lang_picker(&mut self, cfg: &Config) {
-        let cur = lang::PICKABLE.iter().position(|s| *s == cfg.lang).unwrap_or(0);
+        let cur = lang::PICKABLE
+            .iter()
+            .position(|s| *s == cfg.lang)
+            .unwrap_or(0);
         let mut state = ListState::default();
         state.select(Some(cur));
         self.lang_state = Some(state);
@@ -325,7 +330,10 @@ pub fn run(terminal: &mut Terminal<Backend>, cfg: &mut Config, cache: Cache) -> 
         if app.open_login {
             app.open_login = false;
             match login::run(terminal, cfg, false)? {
-                login::LoginOutcome::Saved { cfg: new_cfg, username } => {
+                login::LoginOutcome::Saved {
+                    cfg: new_cfg,
+                    username,
+                } => {
                     *cfg = new_cfg;
                     app.status = format!("Logged in as {username}.");
                     app.load_profile(cfg);
@@ -592,7 +600,11 @@ fn stat_line(label: &str, stat: &DifficultyStat, color: Color, width: u16) -> Li
 /// A progress bar of `cells` width for a 0-100 percentage.
 fn bar(pct: f64, cells: usize) -> String {
     let filled = ((pct / 100.0 * cells as f64).round() as usize).min(cells);
-    format!("[{}{}]", "\u{2588}".repeat(filled), " ".repeat(cells - filled))
+    format!(
+        "[{}{}]",
+        "\u{2588}".repeat(filled),
+        " ".repeat(cells - filled)
+    )
 }
 
 fn problem_line(p: &ProblemSummary, is_daily: bool) -> Line<'static> {
@@ -645,7 +657,9 @@ fn render_lang_picker(f: &mut Frame, app: &App) {
 }
 
 fn pane_block(title: &str, focused: bool) -> Block<'_> {
-    let mut block = Block::default().borders(Borders::ALL).title(title.to_string());
+    let mut block = Block::default()
+        .borders(Borders::ALL)
+        .title(title.to_string());
     if focused {
         block = block.border_style(
             Style::default()

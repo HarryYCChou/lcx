@@ -5,9 +5,7 @@ pub mod models;
 use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};
-use reqwest::header::{
-    HeaderMap, HeaderValue, CONTENT_TYPE, COOKIE, ORIGIN, REFERER, USER_AGENT,
-};
+use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE, COOKIE, ORIGIN, REFERER, USER_AGENT};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
@@ -268,8 +266,7 @@ impl LeetCodeClient {
             }
             bail!("judge request failed ({status}): {text}");
         }
-        serde_json::from_str(&text)
-            .with_context(|| format!("parsing judge result: {text}"))
+        serde_json::from_str(&text).with_context(|| format!("parsing judge result: {text}"))
     }
 }
 

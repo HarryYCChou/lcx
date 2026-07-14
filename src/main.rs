@@ -166,9 +166,7 @@ async fn run() -> Result<()> {
         return launch_tui();
     };
     match command {
-        Command::Login(a) => {
-            commands::auth::login(a.session, a.csrf).await
-        }
+        Command::Login(a) => commands::auth::login(a.session, a.csrf).await,
         Command::Whoami => commands::auth::whoami().await,
         Command::List(a) => {
             commands::list::run(a.difficulty, a.tag, a.status, a.query, a.limit).await
@@ -176,9 +174,7 @@ async fn run() -> Result<()> {
         Command::Show(a) => commands::show::run(&a.key, a.lang, a.code).await,
         Command::Pick(a) => commands::pick::run(&a.key, a.lang, !a.no_open).await,
         Command::Edit(a) => commands::pick::run(&a.key, a.lang, !a.no_open).await,
-        Command::Test(a) => {
-            commands::judge::test(&a.target, a.case, a.lang).await
-        }
+        Command::Test(a) => commands::judge::test(&a.target, a.case, a.lang).await,
         Command::Submit(a) => commands::judge::submit(&a.target, a.lang).await,
         Command::Daily(a) => commands::daily::run(a.pick).await,
         Command::Cache(a) => commands::cache_cmd::run(a.update, a.clear).await,

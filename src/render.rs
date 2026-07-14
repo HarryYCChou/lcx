@@ -87,9 +87,7 @@ pub fn format_test_result(result: &JudgeResult) -> String {
     out.push_str(&header);
     out.push('\n');
 
-    if let (Some(got), Some(expected)) =
-        (&result.code_answer, &result.expected_code_answer)
-    {
+    if let (Some(got), Some(expected)) = (&result.code_answer, &result.expected_code_answer) {
         out.push_str(&format!("\n{}   {:?}\n", "Output:".bold(), got));
         out.push_str(&format!("{} {:?}\n", "Expected:".bold(), expected));
     }
@@ -139,9 +137,7 @@ pub fn format_submit_result(result: &JudgeResult) -> String {
         out.push_str(&format!("{}  {}\n", "✗".red(), status.red().bold()));
     }
 
-    if let (Some(correct), Some(total)) =
-        (result.total_correct, result.total_testcases)
-    {
+    if let (Some(correct), Some(total)) = (result.total_correct, result.total_testcases) {
         out.push_str(&format!("Cases: {correct}/{total}\n"));
     }
     if let Some(rt) = &result.status_runtime {

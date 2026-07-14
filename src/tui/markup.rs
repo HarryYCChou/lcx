@@ -55,7 +55,9 @@ fn styled_piece(raw: &str, tags: &[RichAnnotation]) -> (String, Style) {
             RichAnnotation::Strikeout => style = style.add_modifier(Modifier::CROSSED_OUT),
             RichAnnotation::Code | RichAnnotation::Preformat(_) => {
                 // Inline code / code blocks: grey background like the website.
-                style = style.bg(Color::Rgb(60, 60, 60)).fg(Color::Rgb(235, 235, 235));
+                style = style
+                    .bg(Color::Rgb(60, 60, 60))
+                    .fg(Color::Rgb(235, 235, 235));
             }
             RichAnnotation::Link(_) => {
                 style = style
@@ -85,10 +87,7 @@ mod tests {
     /// leaks its `*`/`` ` `` markers into the visible text.
     #[test]
     fn styles_code_and_strong() {
-        let text = render_html(
-            "<p>Given <code>nums</code> and <strong>k</strong>.</p>",
-            80,
-        );
+        let text = render_html("<p>Given <code>nums</code> and <strong>k</strong>.</p>", 80);
         let spans: Vec<_> = text.lines.iter().flat_map(|l| l.spans.iter()).collect();
 
         let code = spans

@@ -148,7 +148,10 @@ impl SolveApp {
             Err(_) => contents,
         };
         self.code_scroll = 0;
-        format!("Started over: restored original starter code for '{}'.", self.lang_slug)
+        format!(
+            "Started over: restored original starter code for '{}'.",
+            self.lang_slug
+        )
     }
 
     fn scroll(&mut self, delta: i32) {
@@ -363,7 +366,9 @@ fn code_text(code: &str) -> Text<'static> {
 }
 
 fn pane_block(title: &str, focused: bool) -> Block<'_> {
-    let mut block = Block::default().borders(Borders::ALL).title(title.to_string());
+    let mut block = Block::default()
+        .borders(Borders::ALL)
+        .title(title.to_string());
     if focused {
         block = block.border_style(Style::default().add_modifier(Modifier::BOLD));
     }

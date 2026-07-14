@@ -83,7 +83,12 @@ fn meta_from_filename(path: &Path) -> Option<SolutionMeta> {
 
 /// Locate an existing solution file for a problem in the workspace, trying the
 /// preferred language first, then any language.
-pub fn find_existing(cfg: &Config, frontend_id: &str, slug: &str, preferred: &str) -> Option<PathBuf> {
+pub fn find_existing(
+    cfg: &Config,
+    frontend_id: &str,
+    slug: &str,
+    preferred: &str,
+) -> Option<PathBuf> {
     let preferred_path = solution_path(cfg, frontend_id, slug, preferred);
     if preferred_path.exists() {
         return Some(preferred_path);

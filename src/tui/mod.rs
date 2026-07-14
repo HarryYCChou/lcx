@@ -78,8 +78,7 @@ fn enter() -> Result<Terminal<Backend>> {
     enable_raw_mode().context("enabling raw mode")?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen).context("entering alternate screen")?;
-    let mut terminal =
-        Terminal::new(CrosstermBackend::new(stdout)).context("creating terminal")?;
+    let mut terminal = Terminal::new(CrosstermBackend::new(stdout)).context("creating terminal")?;
     terminal.clear().context("clearing terminal")?;
     Ok(terminal)
 }
@@ -88,8 +87,7 @@ fn enter() -> Result<Terminal<Backend>> {
 /// shelling out to an external editor).
 pub(crate) fn leave(terminal: &mut Terminal<Backend>) -> Result<()> {
     disable_raw_mode().context("disabling raw mode")?;
-    execute!(terminal.backend_mut(), LeaveAlternateScreen)
-        .context("leaving alternate screen")?;
+    execute!(terminal.backend_mut(), LeaveAlternateScreen).context("leaving alternate screen")?;
     terminal.show_cursor().context("showing cursor")?;
     Ok(())
 }

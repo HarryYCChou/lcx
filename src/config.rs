@@ -40,8 +40,8 @@ fn default_workspace_dir() -> PathBuf {
 
 /// Returns the directory used to store config and cache (`~/.config/lcx`).
 pub fn project_dir() -> Result<PathBuf> {
-    let dirs = ProjectDirs::from("", "", "lcx")
-        .context("could not determine a home/config directory")?;
+    let dirs =
+        ProjectDirs::from("", "", "lcx").context("could not determine a home/config directory")?;
     Ok(dirs.config_dir().to_path_buf())
 }
 
@@ -86,7 +86,10 @@ impl Config {
 
     /// Returns true when session + csrf token are both present.
     pub fn is_authenticated(&self) -> bool {
-        self.session.as_deref().map(|s| !s.is_empty()).unwrap_or(false)
+        self.session
+            .as_deref()
+            .map(|s| !s.is_empty())
+            .unwrap_or(false)
             && self
                 .csrf_token
                 .as_deref()
