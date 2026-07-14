@@ -1,0 +1,14 @@
+# Rust build artifacts
+/target
+
+# Backtraces
+*.rs.bk
+
+# Editor / OS cruft
+*.swp
+*~
+.DS_Store
+
+# Local secrets — never commit LeetCode session cookies
+config.toml
+*.sqlite
