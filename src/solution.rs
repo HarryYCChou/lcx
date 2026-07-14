@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Context, Result};
 use std::path::{Path, PathBuf};
 
-use crate::client::models::ProblemDetail;
 use crate::config::Config;
 use crate::lang;
 
@@ -19,15 +18,13 @@ pub fn solution_path(cfg: &Config, frontend_id: &str, slug: &str, lang_slug: &st
         .join(format!("{frontend_id}.{slug}.{ext}"))
 }
 
-/// Build the file contents: a short lcx banner, a machine-readable metadata
-/// line (used by `test`/`submit` to identify the problem), then the code.
-pub fn render_file(detail: &ProblemDetail, lang_slug: &str, code: &str) -> String {
+/// Build the file contents: a short lcx banner followed by the code. The
+/// problem/language are identified from the file name (`{id}.{slug}.{ext}`) by
+/// `test`/`submit`, so no metadata comment is embedded.
+pub fn render_file(lang_slug: &str, code: &str) -> String {
     let cp = lang::comment_prefix(lang_slug);
     format!(
-        "{cp} Solved with lcx \u{2014} https://github.com/HarryYCChou/lcx\n{cp} @lcx slug={} id={} lang={}\n\n{}\n",
-        detail.slug,
-        detail.question_id,
-        lang_slug,
+        "{cp} lcx \u{2014} LeetCode in your terminal\n{cp} Solved with lcx \u{2014} checkout https://github.com/HarryYCChou/lcx\n\n{}\n",
         clean_snippet(code),
     )
 }
