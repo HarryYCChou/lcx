@@ -101,7 +101,20 @@ impl SolveApp {
         path: std::path::PathBuf,
         code: String,
     ) -> Self {
-        let desc = super::markup::render_html(&detail.content, 100);
+        let mut desc = super::markup::render_html(&detail.content, 100);
+        // Show the problem link at the top of the description panel (it used to
+        // live in the generated solution file header).
+        let url = format!("https://leetcode.com/problems/{}/", detail.slug);
+        desc.lines.insert(
+            0,
+            Line::from(Span::styled(
+                url,
+                Style::default()
+                    .fg(Color::Rgb(88, 166, 255))
+                    .add_modifier(Modifier::UNDERLINED),
+            )),
+        );
+        desc.lines.insert(1, Line::raw(""));
         Self {
             cfg,
             client,

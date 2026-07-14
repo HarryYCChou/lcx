@@ -19,17 +19,15 @@ pub fn solution_path(cfg: &Config, frontend_id: &str, slug: &str, lang_slug: &st
         .join(format!("{frontend_id}.{slug}.{ext}"))
 }
 
-/// Build the file contents: a metadata header comment plus the code snippet.
+/// Build the file contents: a short lcx banner, a machine-readable metadata
+/// line (used by `test`/`submit` to identify the problem), then the code.
 pub fn render_file(detail: &ProblemDetail, lang_slug: &str, code: &str) -> String {
     let cp = lang::comment_prefix(lang_slug);
     format!(
-        "{cp} @lcx slug={} id={} lang={}\n{cp} {} [{}] https://leetcode.com/problems/{}/\n\n{}\n",
+        "{cp} Solved with lcx \u{2014} https://github.com/HarryYCChou/lcx\n{cp} @lcx slug={} id={} lang={}\n\n{}\n",
         detail.slug,
         detail.question_id,
         lang_slug,
-        detail.title,
-        detail.difficulty,
-        detail.slug,
         clean_snippet(code),
     )
 }
