@@ -9,6 +9,9 @@
 *~
 .DS_Store
 
+# Cursor agent config (local only)
+.cursor/
+
 # Local secrets — never commit LeetCode session cookies
 config.toml
 *.sqlite
