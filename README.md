@@ -21,20 +21,7 @@ same LeetCode logic.
 
 ## Installation
 
-Requires a recent Rust toolchain ([rustup](https://rustup.rs/)).
-
-### From source
-
-```bash
-git clone https://github.com/HarryYCChou/lcx.git
-cd lcx
-cargo build --release
-# binary at ./target/release/lcx
-```
-
-Copy `target/release/lcx` somewhere on your `PATH` (e.g. `~/.local/bin`).
-
-### Linux (download from release page)
+### Linux
 
 Grab the prebuilt binary from the [latest release](https://github.com/HarryYCChou/lcx/releases/latest):
 
@@ -45,6 +32,19 @@ curl -L -o lcx.tar.gz \
 tar -xzf lcx.tar.gz
 install -m 755 lcx ~/.local/bin/lcx   # or somewhere on your PATH
 ```
+
+### From source
+
+Requires a recent Rust toolchain ([rustup](https://rustup.rs/)).
+
+```bash
+git clone https://github.com/HarryYCChou/lcx.git
+cd lcx
+cargo build --release
+# binary at ./target/release/lcx
+```
+
+Copy `target/release/lcx` somewhere on your `PATH` (e.g. `~/.local/bin`).
 
 ## Quick Start
 
