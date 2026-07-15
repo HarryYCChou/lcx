@@ -90,6 +90,12 @@ lcx
 #                     <Esc> goes back to the list (<Esc> again quits)
 ```
 
+> **Windows:** to use cookie auto-detect with Chrome/Edge/Brave, launch `lcx`
+> from a PowerShell running **as administrator** (their cookies are app-bound
+> encrypted). Right-click PowerShell -> "Run as administrator", or run
+> `Start-Process powershell -Verb RunAs`, then run `lcx`. Firefox and manual
+> login work without admin.
+
 ## Commands
 
 | Command | Description |
