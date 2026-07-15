@@ -23,6 +23,21 @@ If `lcx` saves you time, consider supporting its development:
 <a href="https://www.buymeacoffee.com/HarryYCChou"><img height="45" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee"></a>
 </p>
 
+### Crypto
+
+Prefer crypto? Scan a QR code or copy an address below.
+
+<div align="center">
+<table>
+<tr>
+<td align="center"><b>BTC</b><br>Bitcoin<br><img width="150" src="docs/crypto/btc_qr_with_icon.png" alt="BTC QR"><br><code>bc1qdj0jpd7kyx0zy33vaj4nqy86ljswhrda6n04kf</code></td>
+<td align="center"><b>ETH</b><br>Ethereum (ERC-20)<br><img width="150" src="docs/crypto/eth_qr_with_icon.png" alt="ETH QR"><br><code>0x612a806a87e0d99f2a7492dbb875cca6f056fa57</code></td>
+<td align="center"><b>SOL</b><br>Solana<br><img width="150" src="docs/crypto/sol_qr_with_icon.png" alt="SOL QR"><br><code>ELcq1ibh4zcmueHF4MocpntZ3atcdfkei2gW9ybvmCRx</code></td>
+<td align="center"><b>USDT</b><br>Tron (TRC-20)<br><img width="150" src="docs/crypto/usdt_qr_with_icon.png" alt="USDT QR"><br><code>TS1wPw1MR5PXvfC4R62jMgVzn5FYMTDnB4</code></td>
+</tr>
+</table>
+</div>
+
 ## Demo
 
 <video src="https://github.com/HarryYCChou/lcx/raw/main/docs/lcx.mp4" controls muted width="100%"></video>
