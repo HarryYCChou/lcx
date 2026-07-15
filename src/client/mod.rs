@@ -187,26 +187,6 @@ impl LeetCodeClient {
         Ok((total, problems))
     }
 
-    /// Fetch the entire problem list by paging through the problemset. Unlike
-    /// the CLI `cache --update`, this prints nothing (safe to call from the TUI).
-    pub async fn fetch_all_problems(&self) -> Result<Vec<ProblemSummary>> {
-        const PAGE: i64 = 500;
-        let mut all = Vec::new();
-        let mut skip = 0;
-        loop {
-            let (total, batch) = self
-                .list_problems(PAGE, skip, serde_json::json!({}))
-                .await?;
-            let fetched = batch.len() as i64;
-            all.extend(batch);
-            skip += fetched;
-            if fetched == 0 || skip >= total {
-                break;
-            }
-        }
-        Ok(all)
-    }
-
     /// Fetch full detail for a problem by its title slug.
     pub async fn problem_detail(&self, slug: &str) -> Result<ProblemDetail> {
         let variables = serde_json::json!({ "titleSlug": slug });

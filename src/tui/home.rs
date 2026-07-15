@@ -209,26 +209,52 @@ impl App {
         }
     }
 
-    /// Fetch the full problem list from LeetCode and rebuild the cache.
-    fn refresh(&mut self, cfg: &Config) {
+    /// Fetch the full problem list from LeetCode and rebuild the cache, showing
+    /// page-by-page progress in the status bar (like the CLI `cache --update`).
+    fn refresh(&mut self, terminal: &mut Terminal<Backend>, cfg: &Config) -> Result<()> {
+        const PAGE: i64 = 500;
+
         let client = match LeetCodeClient::from_config(cfg) {
             Ok(c) => c,
             Err(e) => {
                 self.status = format!("Client error: {e:#}");
-                return;
+                return Ok(());
             }
         };
-        match block_on(client.fetch_all_problems()) {
-            Ok(problems) => match self.cache.replace_all(&problems) {
-                Ok(()) => {
-                    let n = problems.len();
-                    self.refilter();
-                    self.status = format!("Updated {n} problems.");
-                }
-                Err(e) => self.status = format!("Cache write failed: {e}"),
-            },
-            Err(e) => self.status = format!("Update failed: {e:#}"),
+
+        self.status = "Updating problem list... (fetching from LeetCode)".to_string();
+        terminal.draw(|f| ui(f, self, cfg))?;
+
+        let mut all = Vec::new();
+        let mut skip = 0i64;
+        loop {
+            let (total, batch) =
+                match block_on(client.list_problems(PAGE, skip, serde_json::json!({}))) {
+                    Ok(v) => v,
+                    Err(e) => {
+                        self.status = format!("Update failed: {e:#}");
+                        return Ok(());
+                    }
+                };
+            let fetched = batch.len() as i64;
+            all.extend(batch);
+            skip += fetched;
+            self.status = format!("Updating problem list... {} / {total} problems", all.len());
+            terminal.draw(|f| ui(f, self, cfg))?;
+            if fetched == 0 || skip >= total {
+                break;
+            }
         }
+
+        match self.cache.replace_all(&all) {
+            Ok(()) => {
+                let n = all.len();
+                self.refilter();
+                self.status = format!("Updated {n} problems.");
+            }
+            Err(e) => self.status = format!("Cache write failed: {e}"),
+        }
+        Ok(())
     }
 
     fn load_profile(&mut self, cfg: &Config) {
@@ -472,9 +498,7 @@ pub fn run(terminal: &mut Terminal<Backend>, cfg: &mut Config, cache: Cache) -> 
                 continue;
             }
             KeyCode::F(5) => {
-                app.status = "Updating problem list... (fetching from LeetCode)".to_string();
-                terminal.draw(|f| ui(f, &mut app, cfg))?;
-                app.refresh(cfg);
+                app.refresh(terminal, cfg)?;
                 continue;
             }
             _ => {}
