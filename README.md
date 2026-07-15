@@ -35,7 +35,7 @@ install -m 755 lcx ~/.local/bin/lcx   # or somewhere on your PATH
 ### macOS
 
 ```bash
-# Apple Silicon (M1/M2/M3)
+# Apple Silicon
 curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-aarch64-apple-darwin.tar.gz
 tar -xzf lcx-aarch64-apple-darwin.tar.gz
 
