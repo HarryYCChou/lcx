@@ -92,8 +92,10 @@ impl LoginApp {
                 self.status = "Detected browser cookies, verifying...".to_string();
                 self.submit();
             }
-            Err(_) => {
-                self.status = "Auto-detecting browser login... (<F3> to open login page, or type to enter manually)".to_string();
+            Err(e) => {
+                // Surface the reason (e.g. "not found, sign in first" or the
+                // Windows app-bound/admin hint) instead of a generic spinner.
+                self.status = format!("{e}");
             }
         }
     }
@@ -185,28 +187,66 @@ impl LoginApp {
 }
 
 /// Read LeetCode cookies from any local browser the user is logged into.
+///
+/// Browsers are tried individually (instead of `rookie::load`, which swallows
+/// per-browser errors) so we can surface *why* detection failed. The common
+/// culprit on Windows is Chrome/Edge/Brave "app-bound" cookie encryption, which
+/// can only be decrypted when running as administrator.
 fn import_cookies() -> Result<(String, String)> {
+    type Loader = fn(Option<Vec<String>>) -> rookie::Result<Vec<rookie::enums::Cookie>>;
     let domains = Some(vec!["leetcode.com".to_string()]);
-    let cookies =
-        rookie::load(domains).map_err(|e| anyhow!("could not read browser cookies: {e}"))?;
+    let loaders: [Loader; 6] = [
+        rookie::firefox,
+        rookie::chrome,
+        rookie::edge,
+        rookie::brave,
+        rookie::chromium,
+        rookie::vivaldi,
+    ];
 
     let mut session = None;
     let mut csrf = None;
-    for c in cookies {
-        if !c.domain.contains("leetcode") {
-            continue;
+    // Set when a browser was present but its cookies couldn't be decrypted
+    // (e.g. app-bound encryption on Windows without admin rights).
+    let mut blocked = false;
+
+    for load in loaders {
+        let cookies = match load(domains.clone()) {
+            Ok(c) => c,
+            Err(e) => {
+                let msg = e.to_string().to_lowercase();
+                if msg.contains("admin") || msg.contains("appbound") || msg.contains("app-bound") {
+                    blocked = true;
+                }
+                continue;
+            }
+        };
+        for c in cookies {
+            if !c.domain.contains("leetcode") {
+                continue;
+            }
+            match c.name.as_str() {
+                "LEETCODE_SESSION" => session = Some(c.value),
+                "csrftoken" => csrf = Some(c.value),
+                _ => {}
+            }
         }
-        match c.name.as_str() {
-            "LEETCODE_SESSION" => session = Some(c.value),
-            "csrftoken" => csrf = Some(c.value),
-            _ => {}
+        if session.is_some() && csrf.is_some() {
+            break;
         }
     }
 
     match (session, csrf) {
         (Some(s), Some(c)) => Ok((s, c)),
+        _ if blocked => Err(anyhow!(
+            "Found a Chromium browser but couldn't read its cookies. On Windows, \
+             Chrome/Edge/Brave use app-bound encryption and can only be read when \
+             lcx runs as administrator. Use Firefox, run lcx as admin, or enter \
+             cookies manually (<Tab> to a field and type)."
+        )),
         _ => Err(anyhow!(
-            "LeetCode cookies not found. Open the login page (<F3>) and sign in first."
+            "LeetCode cookies not found. Open the login page (<F3>) and sign in first, \
+             or enter cookies manually."
         )),
     }
 }

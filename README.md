@@ -114,6 +114,9 @@ does.
 
 - **Easiest:** launch `lcx` and let the login modal **auto-detect** cookies from a
   browser you're already signed into (press `F3` to open the login page first).
+  On **Windows**, Chrome/Edge/Brave encrypt cookies with app-bound encryption, so
+  auto-detect can only read them if you run `lcx` as administrator; otherwise use
+  Firefox or the manual method below.
 - **Manual:** copy your `LEETCODE_SESSION` and `csrftoken` cookies (see
   [Finding your session cookies](#finding-your-session-cookies)), then:
 

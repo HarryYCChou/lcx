@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Cookie auto-detection now reports why it failed instead of silently spinning,
+  and on Windows explains that Chrome/Edge/Brave app-bound encryption requires
+  running as administrator (Firefox and manual login still work).
+
 ## [0.1.0] - 2026-07-14
 
 ### Added
