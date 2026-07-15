@@ -1,0 +1,144 @@
+use anyhow::{anyhow, Context, Result};
+use std::path::{Path, PathBuf};
+
+use crate::config::Config;
+use crate::lang;
+
+/// Metadata describing which problem a solution file belongs to.
+#[derive(Debug, Clone)]
+pub struct SolutionMeta {
+    pub slug: String,
+    pub lang_slug: String,
+}
+
+/// Compute the on-disk path for a problem's solution file.
+pub fn solution_path(cfg: &Config, frontend_id: &str, slug: &str, lang_slug: &str) -> PathBuf {
+    let ext = lang::extension_for(lang_slug);
+    cfg.workspace_dir
+        .join(format!("{frontend_id}.{slug}.{ext}"))
+}
+
+/// Build the file contents: a short lcx banner followed by the code. The
+/// problem/language are identified from the file name (`{id}.{slug}.{ext}`) by
+/// `test`/`submit`, so no metadata comment is embedded.
+pub fn render_file(lang_slug: &str, code: &str) -> String {
+    let cp = lang::comment_prefix(lang_slug);
+    format!(
+        "{cp} Solved with LCX\n{cp} An open-source CLI for LeetCode.\n{cp} https://github.com/HarryYCChou/lcx\n\n{}\n",
+        clean_snippet(code),
+    )
+}
+
+/// Normalize a LeetCode starter snippet: strip trailing whitespace from every
+/// line (LeetCode ships empty method bodies and separators as lines full of
+/// spaces) and drop leading/trailing blank lines.
+fn clean_snippet(code: &str) -> String {
+    code.lines()
+        .map(|line| line.trim_end())
+        .collect::<Vec<_>>()
+        .join("\n")
+        .trim_matches('\n')
+        .to_string()
+}
+
+/// Parse the `@lcx` metadata header from a solution file's contents.
+pub fn parse_meta(contents: &str) -> Option<SolutionMeta> {
+    let line = contents.lines().find(|l| l.contains("@lcx"))?;
+    let mut slug = None;
+    let mut lang_slug = None;
+    for token in line.split_whitespace() {
+        if let Some(v) = token.strip_prefix("slug=") {
+            slug = Some(v.to_string());
+        } else if let Some(v) = token.strip_prefix("lang=") {
+            lang_slug = Some(v.to_string());
+        }
+    }
+    Some(SolutionMeta {
+        slug: slug?,
+        lang_slug: lang_slug?,
+    })
+}
+
+/// Read a solution file and best-effort resolve its metadata. Falls back to the
+/// filename convention `{id}.{slug}.{ext}` when no header is present.
+pub fn read_solution(path: &Path) -> Result<(String, Option<SolutionMeta>)> {
+    let contents = std::fs::read_to_string(path)
+        .with_context(|| format!("reading solution file {}", path.display()))?;
+    let meta = parse_meta(&contents).or_else(|| meta_from_filename(path));
+    Ok((contents, meta))
+}
+
+fn meta_from_filename(path: &Path) -> Option<SolutionMeta> {
+    let stem = path.file_name()?.to_str()?;
+    // Expect `{id}.{slug}.{ext}`.
+    let ext = path.extension()?.to_str()?;
+    let without_ext = stem.strip_suffix(&format!(".{ext}"))?;
+    let (_id, slug) = without_ext.split_once('.')?;
+    let lang_slug = lang::slug_from_extension(ext)?;
+    Some(SolutionMeta {
+        slug: slug.to_string(),
+        lang_slug: lang_slug.to_string(),
+    })
+}
+
+/// Locate an existing solution file for a problem in the workspace, trying the
+/// preferred language first, then any language.
+pub fn find_existing(
+    cfg: &Config,
+    frontend_id: &str,
+    slug: &str,
+    preferred: &str,
+) -> Option<PathBuf> {
+    let preferred_path = solution_path(cfg, frontend_id, slug, preferred);
+    if preferred_path.exists() {
+        return Some(preferred_path);
+    }
+    let prefix = format!("{frontend_id}.{slug}.");
+    let entries = std::fs::read_dir(&cfg.workspace_dir).ok()?;
+    for entry in entries.flatten() {
+        let name = entry.file_name();
+        let name = name.to_str().unwrap_or("");
+        if name.starts_with(&prefix) {
+            return Some(entry.path());
+        }
+    }
+    None
+}
+
+/// Ensure the workspace directory exists.
+pub fn ensure_workspace(cfg: &Config) -> Result<()> {
+    std::fs::create_dir_all(&cfg.workspace_dir)
+        .with_context(|| format!("creating workspace {}", cfg.workspace_dir.display()))?;
+    Ok(())
+}
+
+/// Open a file in the configured editor.
+pub fn open_in_editor(cfg: &Config, path: &Path) -> Result<()> {
+    let editor = cfg.resolve_editor();
+    let status = std::process::Command::new(&editor)
+        .arg(path)
+        .status()
+        .with_context(|| format!("launching editor '{editor}'"))?;
+    if !status.success() {
+        return Err(anyhow!("editor '{editor}' exited with an error"));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::clean_snippet;
+
+    #[test]
+    fn strips_trailing_whitespace_and_normalizes_endings() {
+        // Mimics a LeetCode snippet: empty bodies / separators are lines of
+        // spaces, and endings may be CRLF.
+        let raw = "class MinStack {\r\n    void pop() {\r\n        \r\n    }\r\n    \r\n    int top() {\r\n        \r\n    }\r\n};\r\n";
+        let cleaned = clean_snippet(raw);
+        assert_eq!(
+            cleaned,
+            "class MinStack {\n    void pop() {\n\n    }\n\n    int top() {\n\n    }\n};"
+        );
+        assert!(!cleaned.lines().any(|l| l != l.trim_end()));
+    }
+}
