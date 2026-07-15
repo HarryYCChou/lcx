@@ -25,10 +25,6 @@ If `lcx` saves you time, consider supporting its development:
 
 ## Demo
 
-https://github.com/HarryYCChou/lcx/raw/main/docs/lcx.mp4
-
-<!-- If the inline player doesn't load (e.g. before this lands on the default
-     branch), the video also plays directly at docs/lcx.mp4. -->
 <video src="https://github.com/HarryYCChou/lcx/raw/main/docs/lcx.mp4" controls muted width="100%"></video>
 
 ## Installation
