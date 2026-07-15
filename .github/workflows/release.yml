@@ -12,8 +12,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  release:
-    name: release (${{ matrix.target }})
+  build:
+    name: build (${{ matrix.target }})
     strategy:
       fail-fast: false
       matrix:
@@ -49,13 +49,31 @@ jobs:
           [[ "${{ matrix.target }}" == *windows* ]] && bin=lcx.exe
           cd target/${{ matrix.target }}/release
           if [[ "${{ matrix.archive }}" == "zip" ]]; then
-            7z a "../../../lcx-${{ matrix.target }}.zip" "$bin"
+            7z a "$GITHUB_WORKSPACE/lcx-${{ matrix.target }}.zip" "$bin"
           else
-            tar -czf "../../../lcx-${{ matrix.target }}.tar.gz" "$bin"
+            tar -czf "$GITHUB_WORKSPACE/lcx-${{ matrix.target }}.tar.gz" "$bin"
           fi
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: lcx-${{ matrix.target }}
+          path: lcx-${{ matrix.target }}.${{ matrix.archive }}
+          retention-days: 1
+
+  publish:
+    name: publish release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: dist
+          merge-multiple: true
 
       - name: Publish release
         uses: softprops/action-gh-release@v3
         with:
-          files: lcx-${{ matrix.target }}.${{ matrix.archive }}
+          files: dist/*
           generate_release_notes: true
