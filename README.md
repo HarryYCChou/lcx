@@ -55,11 +55,17 @@ lcx cache --update
 
 # 2. Launch the interactive TUI
 lcx
-```
 
-Inside the TUI, open the login modal and let `lcx` **auto-detect** your LeetCode
-cookies from a browser you're already signed into (press `F3` to open the login
-page first). Then browse and solve without leaving the terminal.
+# From here everything happens inside the TUI:
+# 3. Log in           <F1> opens the login modal; it auto-detects your browser
+#                     cookies (<F3> opens the LeetCode login page), then <Enter>
+# 4. Set language     first time only: <Tab> to the menu, pick "Set default
+#                     language", <Enter> to choose (used for new solution files)
+# 5. Pick a problem   <Tab> back to search, type to filter, <↑>/<↓> move, <Enter> open
+# 6. Write code       <e> (or <Enter>) opens the file in $EDITOR; <r> starts over
+# 7. Test & submit    <t> runs the sample cases, <s> submits for a verdict
+#                     <Esc> goes back to the list (<Esc> again quits)
+```
 
 ## Commands
 
