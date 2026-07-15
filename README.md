@@ -87,6 +87,7 @@ lcx
 # From here everything happens inside the TUI:
 # 3. Log in           <F1> opens the login modal; it auto-detects your browser
 #                     cookies (<F3> opens the LeetCode login page), then <Enter>
+#                     manual login? see "Finding your session cookies" below
 # 4. Set language     first time only: <Tab> to the menu, pick "Set default
 #                     language", <Enter> to choose (used for new solution files)
 # 5. Pick a problem   <Tab> back to search, type to filter, <↑>/<↓> move, <Enter> open
@@ -119,8 +120,8 @@ does.
 
 - **Easiest:** launch `lcx` and let the login modal **auto-detect** cookies from a
   browser you're already signed into (press `F3` to open the login page first).
-- **Manual:** copy `LEETCODE_SESSION` and `csrftoken` from DevTools → Application →
-  Cookies → `https://leetcode.com`, then:
+- **Manual:** copy your `LEETCODE_SESSION` and `csrftoken` cookies (see
+  [Finding your session cookies](#finding-your-session-cookies)), then:
 
 ```bash
 lcx login --session "<LEETCODE_SESSION>" --csrf "<csrftoken>"
@@ -130,12 +131,30 @@ lcx login --session "<LEETCODE_SESSION>" --csrf "<csrftoken>"
 Credentials are stored at `~/.config/lcx/config.toml` with `600` permissions.
 Verify with `lcx whoami`.
 
+### Finding your session cookies
+
+You only need this for manual login (the TUI can auto-detect cookies for you).
+
+1. Open [leetcode.com](https://leetcode.com) in your browser and **sign in**.
+2. Open your browser's developer tools:
+   - **Chrome / Edge / Brave:** `F12` (or `Ctrl+Shift+I`, `Cmd+Option+I` on macOS)
+     → **Application** tab → **Storage** → **Cookies** → `https://leetcode.com`.
+   - **Firefox:** `F12` → **Storage** tab → **Cookies** → `https://leetcode.com`.
+3. Find these two rows and copy each **Value**:
+   - `LEETCODE_SESSION` — a long token (this is your session).
+   - `csrftoken` — a shorter token.
+4. Pass them to `lcx login` as shown above.
+
+Treat these like a password: they grant access to your LeetCode account. They
+expire periodically, so if requests start failing, grab fresh values or run
+`lcx login` again.
+
 ### Advanced: work from the command line
 
 Prefer to skip the TUI? The whole solve loop is available as plain commands:
 
 ```bash
-lcx login                    # sign in (prompts for cookies; see Authentication above)
+lcx login                    # sign in (see Authentication / Finding your session cookies)
 lcx list --difficulty easy   # browse problems
 lcx pick 1 --lang rust       # scaffold a solution file and open your editor
 lcx test 1                   # run against sample cases
