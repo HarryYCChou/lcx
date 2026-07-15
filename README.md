@@ -21,15 +21,43 @@ same LeetCode logic.
 
 ## Installation
 
+Prebuilt binaries are attached to the [latest release](https://github.com/HarryYCChou/lcx/releases/latest).
+
 ### Linux
 
-Grab the prebuilt binary from the [latest release](https://github.com/HarryYCChou/lcx/releases/latest):
-
 ```bash
-# x86_64 Linux
+# x86_64
 curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-x86_64-unknown-linux-gnu.tar.gz
 tar -xzf lcx-x86_64-unknown-linux-gnu.tar.gz
 install -m 755 lcx ~/.local/bin/lcx   # or somewhere on your PATH
+```
+
+### macOS
+
+```bash
+# Apple Silicon (M1/M2/M3)
+curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-aarch64-apple-darwin.tar.gz
+tar -xzf lcx-aarch64-apple-darwin.tar.gz
+
+# Intel
+curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-x86_64-apple-darwin.tar.gz
+tar -xzf lcx-x86_64-apple-darwin.tar.gz
+
+# then install (either arch)
+install -m 755 lcx /usr/local/bin/lcx   # or somewhere on your PATH
+```
+
+The binary is unsigned, so macOS may quarantine it. If it refuses to run:
+`xattr -d com.apple.quarantine /usr/local/bin/lcx`.
+
+### Windows
+
+Download and extract the zip, then put `lcx.exe` somewhere on your `PATH`
+(PowerShell):
+
+```powershell
+Invoke-WebRequest -Uri https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-x86_64-pc-windows-msvc.zip -OutFile lcx.zip
+Expand-Archive lcx.zip -DestinationPath .
 ```
 
 ### From source
