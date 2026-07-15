@@ -38,11 +38,16 @@ install -m 755 lcx ~/.local/bin/lcx   # or somewhere on your PATH
 # Apple Silicon
 curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-aarch64-apple-darwin.tar.gz
 tar -xzf lcx-aarch64-apple-darwin.tar.gz
-install -m 755 lcx /usr/local/bin/lcx   # or somewhere on your PATH
+
+# universal (works with or without Homebrew)
+sudo install -m 755 lcx /usr/local/bin/lcx
+
+# or, if you use Homebrew (already on PATH, no sudo needed):
+install -m 755 lcx /opt/homebrew/bin/lcx
 ```
 
 The binary is unsigned, so macOS may quarantine it. If it refuses to run:
-`xattr -d com.apple.quarantine /usr/local/bin/lcx`.
+`xattr -d com.apple.quarantine "$(command -v lcx)"`.
 
 ### Windows
 
