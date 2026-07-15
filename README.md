@@ -15,7 +15,7 @@ same LeetCode logic.
 
 ## Support
 
-If `lcx` saves you time, consider supporting its development:
+Enjoying `lcx`? A little support goes a long way toward keeping it maintained:
 
 <p align="center">
 <a href="https://github.com/sponsors/HarryYCChou"><img height="45" src="https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub Sponsors"></a>
