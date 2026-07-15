@@ -47,13 +47,36 @@ Copy `target/release/lcx` somewhere on your `PATH` (e.g. `~/.local/bin`).
 
 ## Quick Start
 
+`lcx` is TUI-first — the whole flow (log in, search, solve) happens in the app:
+
 ```bash
 # 1. Populate the local problem cache
 lcx cache --update
 
-# 2. Launch the interactive TUI (log in, search, solve)
+# 2. Launch the interactive TUI
 lcx
 ```
+
+Inside the TUI, open the login modal and let `lcx` **auto-detect** your LeetCode
+cookies from a browser you're already signed into (press `F3` to open the login
+page first). Then browse and solve without leaving the terminal.
+
+## Commands
+
+| Command | Description |
+| --- | --- |
+| `lcx` | Launch the interactive TUI (default) |
+| `lcx login [--session <s>] [--csrf <c>]` | Save session credentials (prompts if omitted) |
+| `lcx whoami` | Show the currently authenticated user |
+| `lcx list [--difficulty] [--tag] [--status] [--query] [--limit]` | List cached problems with filters |
+| `lcx show <id\|slug> [--lang] [--code]` | Show a problem's description (optionally starter code) |
+| `lcx pick <id\|slug> [--lang] [--no-open]` | Generate a solution file and open it |
+| `lcx edit <id\|slug> [--lang] [--no-open]` | Reopen (or generate) a solution file |
+| `lcx test <id\|slug\|path> [--case] [--lang]` | Run a solution against sample/custom cases |
+| `lcx submit <id\|slug\|path> [--lang]` | Submit a solution and print the verdict |
+| `lcx daily [--pick]` | Show today's daily challenge (optionally scaffold it) |
+| `lcx cache [--update] [--clear]` | Manage the local problem cache |
+| `lcx config [set <key> <value>]` | View or change configuration (`lang`, `editor`, `workspace`) |
 
 ### Authentication
 
@@ -73,29 +96,12 @@ lcx login --session "<LEETCODE_SESSION>" --csrf "<csrftoken>"
 Credentials are stored at `~/.config/lcx/config.toml` with `600` permissions.
 Verify with `lcx whoami`.
 
-## Commands
-
-| Command | Description |
-| --- | --- |
-| `lcx` | Launch the interactive TUI (default) |
-| `lcx login [--session <s>] [--csrf <c>]` | Save session credentials (prompts if omitted) |
-| `lcx whoami` | Show the currently authenticated user |
-| `lcx list [--difficulty] [--tag] [--status] [--query] [--limit]` | List cached problems with filters |
-| `lcx show <id\|slug> [--lang] [--code]` | Show a problem's description (optionally starter code) |
-| `lcx pick <id\|slug> [--lang] [--no-open]` | Generate a solution file and open it |
-| `lcx edit <id\|slug> [--lang] [--no-open]` | Reopen (or generate) a solution file |
-| `lcx test <id\|slug\|path> [--case] [--lang]` | Run a solution against sample/custom cases |
-| `lcx submit <id\|slug\|path> [--lang]` | Submit a solution and print the verdict |
-| `lcx daily [--pick]` | Show today's daily challenge (optionally scaffold it) |
-| `lcx cache [--update] [--clear]` | Manage the local problem cache |
-| `lcx config [set <key> <value>]` | View or change configuration (`lang`, `editor`, `workspace`) |
-
 ### Advanced: work from the command line
 
 Prefer to skip the TUI? The whole solve loop is available as plain commands:
 
 ```bash
-lcx login                    # sign in (prompts for cookies; see Authentication)
+lcx login                    # sign in (prompts for cookies; see Authentication above)
 lcx list --difficulty easy   # browse problems
 lcx pick 1 --lang rust       # scaffold a solution file and open your editor
 lcx test 1                   # run against sample cases
