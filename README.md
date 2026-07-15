@@ -40,6 +40,7 @@ curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-aarch64
 tar -xzf lcx-aarch64-apple-darwin.tar.gz
 
 # universal (works with or without Homebrew)
+sudo mkdir -p /usr/local/bin
 sudo install -m 755 lcx /usr/local/bin/lcx
 
 # or, if you use Homebrew (already on PATH, no sudo needed):
