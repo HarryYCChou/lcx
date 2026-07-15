@@ -38,12 +38,6 @@ install -m 755 lcx ~/.local/bin/lcx   # or somewhere on your PATH
 # Apple Silicon
 curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-aarch64-apple-darwin.tar.gz
 tar -xzf lcx-aarch64-apple-darwin.tar.gz
-
-# Intel
-curl -LO https://github.com/HarryYCChou/lcx/releases/latest/download/lcx-x86_64-apple-darwin.tar.gz
-tar -xzf lcx-x86_64-apple-darwin.tar.gz
-
-# then install (either arch)
 install -m 755 lcx /usr/local/bin/lcx   # or somewhere on your PATH
 ```
 
