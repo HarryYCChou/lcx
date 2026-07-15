@@ -53,13 +53,6 @@ lcx cache --update
 
 # 2. Launch the interactive TUI (log in, search, solve)
 lcx
-
-# ...or work from the command line:
-lcx login                    # sign in (prompts for cookies; see Authentication)
-lcx list --difficulty easy   # browse problems
-lcx pick 1 --lang rust       # scaffold a solution file and open your editor
-lcx test 1                   # run against sample cases
-lcx submit 1                 # submit for a verdict
 ```
 
 ### Authentication
@@ -96,6 +89,18 @@ Verify with `lcx whoami`.
 | `lcx daily [--pick]` | Show today's daily challenge (optionally scaffold it) |
 | `lcx cache [--update] [--clear]` | Manage the local problem cache |
 | `lcx config [set <key> <value>]` | View or change configuration (`lang`, `editor`, `workspace`) |
+
+### Advanced: work from the command line
+
+Prefer to skip the TUI? The whole solve loop is available as plain commands:
+
+```bash
+lcx login                    # sign in (prompts for cookies; see Authentication)
+lcx list --difficulty easy   # browse problems
+lcx pick 1 --lang rust       # scaffold a solution file and open your editor
+lcx test 1                   # run against sample cases
+lcx submit 1                 # submit for a verdict
+```
 
 More examples:
 
