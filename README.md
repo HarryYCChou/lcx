@@ -13,6 +13,16 @@ subcommands for scripting and one-offs. The core (HTTP client, cache, config) is
 deliberately separated from the presentation layer, so the CLI and TUI share the
 same LeetCode logic.
 
+## Support
+
+If `lcx` saves you time, consider supporting its development:
+
+<p align="center">
+  <a href="https://github.com/sponsors/HarryYCChou"><img src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub Sponsors"></a>
+  <a href="https://ko-fi.com/HarryYCChou"><img src="https://img.shields.io/badge/Ko--fi-Buy%20a%20coffee-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
+  <a href="https://www.buymeacoffee.com/HarryYCChou"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
+</p>
+
 ## Demo
 
 <!-- Record a short session and drop the file at docs/demo.gif.
@@ -252,14 +262,6 @@ Guidelines:
 
 > LeetCode's endpoints are unofficial and may change; if requests start failing,
 > refresh your cookies with `lcx login`.
-
-## Support
-
-If `lcx` saves you time, consider supporting its development:
-
-- [GitHub Sponsors](https://github.com/sponsors/HarryYCChou)
-- [Ko-fi](https://ko-fi.com/HarryYCChou)
-- [Buy Me a Coffee](https://www.buymeacoffee.com/HarryYCChou)
 
 ## License
 
