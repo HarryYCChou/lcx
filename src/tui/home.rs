@@ -8,6 +8,8 @@
 //!
 //! `Tab` moves focus between the menu and the search page.
 
+use std::time::Duration;
+
 use anyhow::Result;
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
@@ -18,10 +20,18 @@ use ratatui::{Frame, Terminal};
 
 use super::{block_on, help_line, login, solve, Backend};
 use crate::cache::{Cache, ListFilter};
+use crate::client::graphql::DailyChallenge;
 use crate::client::models::{DifficultyStat, ProblemSummary, ProfileStats};
 use crate::client::LeetCodeClient;
 use crate::config::Config;
 use crate::lang;
+
+/// Result of a background startup fetch, delivered to the event loop so the UI
+/// can paint immediately instead of blocking on the network.
+enum LoadMsg {
+    Profile(Result<ProfileStats>),
+    Daily(Result<(String, DailyChallenge)>),
+}
 
 /// Which side currently receives navigation input.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -152,35 +162,30 @@ impl App {
         self.search.trim().is_empty() && self.daily.as_ref().is_some_and(|d| d.slug == slug)
     }
 
-    /// Fetch today's daily challenge once and refresh the list. Best-effort: on
-    /// any error (offline, etc.) the daily simply isn't pinned.
-    fn load_daily(&mut self, cfg: &Config) {
-        let Ok(client) = LeetCodeClient::from_config(cfg) else {
-            return;
-        };
-        if let Ok((_date, daily)) = block_on(client.daily()) {
-            let q = daily.question;
-            // Prefer the cached summary (has status/ac rate/tags); fall back to
-            // a minimal entry built from the daily payload.
-            let summary = self
-                .cache
-                .find(&q.title_slug)
-                .ok()
-                .flatten()
-                .unwrap_or_else(|| ProblemSummary {
-                    question_id: 0,
-                    frontend_id: q.question_frontend_id,
-                    title: q.title,
-                    slug: q.title_slug,
-                    difficulty: q.difficulty,
-                    paid_only: false,
-                    ac_rate: 0.0,
-                    status: None,
-                    tags: Vec::new(),
-                });
-            self.daily = Some(summary);
-            self.refilter();
-        }
+    /// Pin a fetched daily challenge to the top of the list. Best-effort: called
+    /// once the background fetch resolves (on error the daily just isn't pinned).
+    fn apply_daily(&mut self, daily: DailyChallenge) {
+        let q = daily.question;
+        // Prefer the cached summary (has status/ac rate/tags); fall back to
+        // a minimal entry built from the daily payload.
+        let summary = self
+            .cache
+            .find(&q.title_slug)
+            .ok()
+            .flatten()
+            .unwrap_or_else(|| ProblemSummary {
+                question_id: 0,
+                frontend_id: q.question_frontend_id,
+                title: q.title,
+                slug: q.title_slug,
+                difficulty: q.difficulty,
+                paid_only: false,
+                ac_rate: 0.0,
+                status: None,
+                tags: Vec::new(),
+            });
+        self.daily = Some(summary);
+        self.refilter();
     }
 
     fn move_result(&mut self, delta: i32) {
@@ -316,11 +321,57 @@ impl App {
 /// Run the unified main screen until the user quits.
 pub fn run(terminal: &mut Terminal<Backend>, cfg: &mut Config, cache: Cache) -> Result<()> {
     let mut app = App::new(cache);
-    app.load_profile(cfg);
-    app.load_daily(cfg);
+
+    // Load the profile and daily challenge in the background so the cached
+    // problem list paints instantly instead of waiting on two network calls.
+    let (tx, rx) = std::sync::mpsc::channel::<LoadMsg>();
+    let mut pending = 0usize;
+
+    if cfg.is_authenticated() {
+        match LeetCodeClient::from_config(cfg) {
+            Ok(client) => {
+                let tx = tx.clone();
+                tokio::spawn(async move {
+                    let _ = tx.send(LoadMsg::Profile(client.profile_stats().await));
+                });
+                pending += 1;
+            }
+            Err(e) => app.profile = Profile::Unavailable(format!("Client error: {e:#}")),
+        }
+    } else {
+        app.profile = Profile::Unavailable("Not logged in.".to_string());
+    }
+
+    if let Ok(client) = LeetCodeClient::from_config(cfg) {
+        let tx = tx.clone();
+        tokio::spawn(async move {
+            let _ = tx.send(LoadMsg::Daily(client.daily().await));
+        });
+        pending += 1;
+    }
+    drop(tx);
+
     terminal.clear()?;
 
     loop {
+        // Apply any background loads that have finished.
+        while let Ok(msg) = rx.try_recv() {
+            match msg {
+                LoadMsg::Profile(res) => {
+                    app.profile = match res {
+                        Ok(stats) => Profile::Ready(Box::new(stats)),
+                        Err(e) => Profile::Unavailable(format!("Could not load profile: {e:#}")),
+                    };
+                }
+                LoadMsg::Daily(res) => {
+                    if let Ok((_date, daily)) = res {
+                        app.apply_daily(daily);
+                    }
+                }
+            }
+            pending = pending.saturating_sub(1);
+        }
+
         terminal.draw(|f| ui(f, &mut app, cfg))?;
         if app.quit {
             return Ok(());
@@ -352,6 +403,12 @@ pub fn run(terminal: &mut Terminal<Backend>, cfg: &mut Config, cache: Cache) -> 
                 Err(e) => app.status = format!("Could not open problem: {e:#}"),
             }
             terminal.clear()?;
+            continue;
+        }
+
+        // While startup loads are in flight, poll so freshly arrived results are
+        // picked up and drawn without waiting for a keypress.
+        if pending > 0 && !event::poll(Duration::from_millis(50))? {
             continue;
         }
 
