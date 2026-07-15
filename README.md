@@ -52,6 +52,20 @@ Prefer crypto? Scan a QR code below, or expand "Copy wallet addresses" to copy o
 
 <video src="https://github.com/user-attachments/assets/2bbec37e-cedb-40b1-afe2-79a8d55cddfa" controls muted width="100%"></video>
 
+## Screenshots
+
+**Login modal** — auto-detects browser cookies:
+
+![Login modal](docs/screenshots/login.png)
+
+**Main dashboard** — menu, profile stats, and problem search:
+
+![Main dashboard](docs/screenshots/home.png)
+
+**Solve view** — description, solution preview, and test/submit output:
+
+![Solve view](docs/screenshots/solve.png)
+
 ## Installation
 
 Prebuilt binaries are attached to the [latest release](https://github.com/HarryYCChou/lcx/releases/latest).
@@ -131,6 +145,18 @@ lcx
 
 > **Windows:** cookie auto-detect with Chrome/Edge/Brave needs an admin
 > PowerShell — see [Authentication](#authentication) for details.
+
+### TUI at a glance
+
+- **Login modal** — hands-free cookie auto-detection (`F3` open login page, `F2`
+  toggle auto-detect, `F4` browse offline, `Esc` cancel). Function keys are used
+  because multiplexers like tmux reserve the Ctrl prefix.
+- **Main dashboard** — `Tab` switches focus between the action menu (set language,
+  login, delete cache, reset config, quit) and the problem search; `F5` refresh,
+  `F1` login, `Esc` quit.
+- **Solve view** — left: description with LeetCode's inline markup preserved;
+  right: read-only solution preview. `e`/`Enter` edit in `$EDITOR`, `r` start over,
+  `Tab` cycle panes, `j`/`k` scroll, `t` test, `s` submit, `Esc` back.
 
 ## Commands
 
@@ -223,32 +249,6 @@ automatically. Config lives at `~/.config/lcx/config.toml`, the cache at
 `go`/`golang`, `ruby`, `swift`, `kotlin`, `scala`, `php`, `dart`, `elixir`,
 `erlang`, `racket`, `mysql`, and more. Set a default with
 `lcx config set lang <slug>` or override per command with `--lang`.
-
-## Screenshots
-
-**Login modal** — auto-detects browser cookies:
-
-![Login modal](docs/screenshots/login.png)
-
-**Main dashboard** — menu, profile stats, and problem search:
-
-![Main dashboard](docs/screenshots/home.png)
-
-**Solve view** — description, solution preview, and test/submit output:
-
-![Solve view](docs/screenshots/solve.png)
-
-### TUI at a glance
-
-- **Login modal** — hands-free cookie auto-detection (`F3` open login page, `F2`
-  toggle auto-detect, `F4` browse offline, `Esc` cancel). Function keys are used
-  because multiplexers like tmux reserve the Ctrl prefix.
-- **Main dashboard** — `Tab` switches focus between the action menu (set language,
-  login, delete cache, reset config, quit) and the problem search; `F5` refresh,
-  `F1` login, `Esc` quit.
-- **Solve view** — left: description with LeetCode's inline markup preserved;
-  right: read-only solution preview. `e`/`Enter` edit in `$EDITOR`, `r` start over,
-  `Tab` cycle panes, `j`/`k` scroll, `t` test, `s` submit, `Esc` back.
 
 ## Roadmap
 
