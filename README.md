@@ -18,17 +18,9 @@ same LeetCode logic.
 If `lcx` saves you time, consider supporting its development:
 
 <p align="center">
-  <a href="https://github.com/sponsors/HarryYCChou">
-    <img height="45" src="https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub Sponsors">
-  </a>
-  &nbsp;
-  <a href="https://ko-fi.com/HarryYCChou">
-    <img height="45" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support me on Ko-fi">
-  </a>
-  &nbsp;
-  <a href="https://www.buymeacoffee.com/HarryYCChou">
-    <img height="45" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee">
-  </a>
+<a href="https://github.com/sponsors/HarryYCChou"><img height="45" src="https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub Sponsors"></a>
+<a href="https://ko-fi.com/HarryYCChou"><img height="45" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support me on Ko-fi"></a>
+<a href="https://www.buymeacoffee.com/HarryYCChou"><img height="45" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee"></a>
 </p>
 
 ## Demo
