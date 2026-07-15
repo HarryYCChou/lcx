@@ -25,7 +25,7 @@ If `lcx` saves you time, consider supporting its development:
 
 ### Crypto
 
-Prefer crypto? Scan a QR code below, or copy an address from the list underneath.
+Prefer crypto? Scan a QR code below, or expand "Copy wallet addresses" to copy one.
 
 <div align="center">
 <table>
@@ -38,14 +38,19 @@ Prefer crypto? Scan a QR code below, or copy an address from the list underneath
 </table>
 </div>
 
+<details>
+<summary>Copy wallet addresses</summary>
+
 - **BTC** (Bitcoin): `bc1qdj0jpd7kyx0zy33vaj4nqy86ljswhrda6n04kf`
 - **ETH** (Ethereum / ERC-20): `0x612a806a87e0d99f2a7492dbb875cca6f056fa57`
 - **SOL** (Solana): `ELcq1ibh4zcmueHF4MocpntZ3atcdfkei2gW9ybvmCRx`
 - **USDT** (Tron / TRC-20): `TS1wPw1MR5PXvfC4R62jMgVzn5FYMTDnB4`
 
+</details>
+
 ## Demo
 
-<video src="https://github.com/HarryYCChou/lcx/raw/main/docs/lcx.mp4" controls muted width="100%"></video>
+<!-- TEMP: pointing at feat/initial-implementation for testing; switch back to /raw/main/ before merge --><video src="https://github.com/HarryYCChou/lcx/raw/feat/initial-implementation/docs/lcx.mp4" controls muted width="100%"></video>
 
 ## Installation
 
@@ -124,11 +129,8 @@ lcx
 #                     <Esc> goes back to the list (<Esc> again quits)
 ```
 
-> **Windows:** to use cookie auto-detect with Chrome/Edge/Brave, launch `lcx`
-> from a PowerShell running **as administrator** (their cookies are app-bound
-> encrypted). Right-click PowerShell -> "Run as administrator", or run
-> `Start-Process powershell -Verb RunAs`, then run `lcx`. Firefox and manual
-> login work without admin.
+> **Windows:** cookie auto-detect with Chrome/Edge/Brave needs an admin
+> PowerShell — see [Authentication](#authentication) for details.
 
 ## Commands
 
@@ -155,8 +157,9 @@ does.
 - **Easiest:** launch `lcx` and let the login modal **auto-detect** cookies from a
   browser you're already signed into (press `F3` to open the login page first).
   On **Windows**, Chrome/Edge/Brave encrypt cookies with app-bound encryption, so
-  auto-detect can only read them if you run `lcx` as administrator; otherwise use
-  Firefox or the manual method below.
+  auto-detect can only read them if you run `lcx` as administrator — right-click
+  PowerShell -> "Run as administrator" (or run `Start-Process powershell -Verb
+  RunAs`), then run `lcx`. Firefox and the manual method below work without admin.
 - **Manual:** copy your `LEETCODE_SESSION` and `csrftoken` cookies (see
   [Finding your session cookies](#finding-your-session-cookies)), then:
 
@@ -222,8 +225,6 @@ automatically. Config lives at `~/.config/lcx/config.toml`, the cache at
 `lcx config set lang <slug>` or override per command with `--lang`.
 
 ## Screenshots
-
-<!-- Drop PNGs under docs/screenshots/ and update the captions below. -->
 
 **Login modal** — auto-detects browser cookies:
 
