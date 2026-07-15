@@ -253,6 +253,14 @@ Guidelines:
 > LeetCode's endpoints are unofficial and may change; if requests start failing,
 > refresh your cookies with `lcx login`.
 
+## Support
+
+If `lcx` saves you time, consider supporting its development:
+
+- [GitHub Sponsors](https://github.com/sponsors/HarryYCChou)
+- [Ko-fi](https://ko-fi.com/HarryYCChou)
+- [Buy Me a Coffee](https://www.buymeacoffee.com/HarryYCChou)
+
 ## License
 
 MIT
