@@ -50,7 +50,7 @@ Prefer crypto? Scan a QR code below, or expand "Copy wallet addresses" to copy o
 
 ## Demo
 
-<video src="https://github.com/user-attachments/assets/2bbec37e-cedb-40b1-afe2-79a8d55cddfa" controls muted width="100%"></video>
+![lcx demo](docs/lcx.gif)
 
 ## Screenshots
 
